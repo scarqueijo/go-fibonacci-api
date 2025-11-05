@@ -8,40 +8,42 @@ import (
 	"strconv"
 )
 
-// Função que gera a sequência de Fibonacci
-func fibonacci(n int) []int {
-	seq := make([]int, n)
-	for i := 0; i < n; i++ {
-		if i == 0 {
-			seq[i] = 0
-		} else if i == 1 {
-			seq[i] = 1
-		} else {
-			seq[i] = seq[i-1] + seq[i-2]
-		}
+// Fibonacci sequence starting at 1,1...
+func Fibonacci(n int) []int {
+	if n <= 0 {
+		return []int{}
+	}
+	if n == 1 {
+		return []int{1}
+	}
+
+	seq := []int{1, 1}
+	for i := 2; i < n; i++ {
+		next := seq[i-1] + seq[i-2]
+		seq = append(seq, next)
 	}
 	return seq
 }
 
-// Handler HTTP
+// HTTP Handler
 func fibonacciHandler(w http.ResponseWriter, r *http.Request) {
-	numberStr := r.URL.Query().Get("number")
-	if numberStr == "" {
-		http.Error(w, "Missing 'number' parameter", http.StatusBadRequest)
+	nStr := r.URL.Query().Get("n")
+	if nStr == "" {
+		http.Error(w, "Parâmetro 'n' é obrigatório. Exemplo: /fibonacci?n=7", http.StatusBadRequest)
 		return
 	}
 
-	number, err := strconv.Atoi(numberStr)
-	if err != nil || number <= 0 {
-		http.Error(w, "'number' must be a positive integer", http.StatusBadRequest)
+	n, err := strconv.Atoi(nStr)
+	if err != nil || n < 1 {
+		http.Error(w, "Parâmetro 'n' deve ser um número inteiro positivo", http.StatusBadRequest)
 		return
 	}
 
-	result := fibonacci(number)
+	seq := Fibonacci(n)
 
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(map[string]interface{}{
-		"sequence": result,
+		"sequence": seq,
 	})
 }
 

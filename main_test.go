@@ -1,14 +1,11 @@
 package main
 
-import (
-	"reflect"
-	"testing"
-)
+import "testing"
 
 func TestFibonacci(t *testing.T) {
 	tests := []struct {
-		input    int
-		expected []int
+		input int
+		want  []int
 	}{
 		{1, []int{1}},
 		{2, []int{1, 1}},
@@ -16,10 +13,13 @@ func TestFibonacci(t *testing.T) {
 		{7, []int{1, 1, 2, 3, 5, 8, 13}},
 	}
 
-	for _, test := range tests {
-		result := fibonacci(test.input)
-		if !reflect.DeepEqual(result, test.expected) {
-			t.Errorf("Fibonacci(%d) = %v; want %v", test.input, result, test.expected)
+	for _, tt := range tests {
+		got := Fibonacci(tt.input)
+		for i := range got {
+			if got[i] != tt.want[i] {
+				t.Errorf("Fibonacci(%d) = %v; want %v", tt.input, got, tt.want)
+				break
+			}
 		}
 	}
 }
